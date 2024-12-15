@@ -19,7 +19,7 @@ public class Cliente {
             BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
             String resultado = entrada.readLine();
 
-            System.out.println("Resultado do gabarito: " + resultado);
+            System.out.println("Resultado da Prova: \n\n" + resultado);
 
             socketCliente.close();
         } catch (IOException e) {

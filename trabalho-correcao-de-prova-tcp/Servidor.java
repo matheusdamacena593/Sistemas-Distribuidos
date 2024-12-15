@@ -51,7 +51,9 @@ public class Servidor extends Thread {
             PrintWriter saida = new PrintWriter(socket.getOutputStream(), true);
 
             String arquivoRespostas = entrada.readLine();
-            String respostas = lerRespostasDoArquivo(arquivoRespostas);
+
+            String gabarito = lerArquivo(arquivoGabarito);
+            String respostas = lerArquivo(arquivoRespostas);
 
             if (respostas == null) {
                 saida.println("Erro: Não foi possível ler o arquivo de respostas.");
@@ -59,7 +61,6 @@ public class Servidor extends Thread {
                 return;
             }
 
-            String gabarito = lerGabaritoDoArquivo();
             if (gabarito != null) {
                 String[] linhasRespostas = respostas.split("\n");
                 String[] linhasGabarito = gabarito.split("\n");
@@ -74,15 +75,15 @@ public class Servidor extends Thread {
                     for (int i = 0; i < totalPerguntas; i++) {
                         int indexComeco = (linhasRespostas[i].charAt(1) == '-') ? 2 : 3;
 
-                        String resposta = linhasRespostas[i].substring(indexComeco);
+                        String respostaProva = linhasRespostas[i].substring(indexComeco);
                         String respostaGabarito = linhasGabarito[i].substring(indexComeco);
 
                         System.out.println((i+1) + "° Comparção: ");
-                        System.out.println("Resposta: " + resposta);
+                        System.out.println("Resposta: " + respostaProva);
                         System.out.println("Gabarito: " + respostaGabarito + "\n");
                         
-                        for (int j = 0; j < resposta.length(); j++) {
-                            char letraResposta = resposta.charAt(j);
+                        for (int j = 0; j < respostaProva.length(); j++) {
+                            char letraResposta = respostaProva.charAt(j);
                             char letraGabarito = respostaGabarito.charAt(j);
 
                             if (letraResposta == letraGabarito) {
@@ -105,40 +106,20 @@ public class Servidor extends Thread {
         }
     }
 
-    private String lerGabaritoDoArquivo() {
+    private String lerArquivo(String caminhoArquivo) {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(this.arquivoGabarito));
-            StringBuilder gabarito = new StringBuilder();
+            BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo));
+            StringBuilder conteudo = new StringBuilder();
             String linha;
 
             while ((linha = br.readLine()) != null) {
-                gabarito.append(linha);
-                gabarito.append("\n");
+                conteudo.append(linha);
+                conteudo.append("\n");
             }
 
             br.close();
 
-            return gabarito.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    private String lerRespostasDoArquivo(String nomeArquivo) {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(nomeArquivo));
-            StringBuilder respostas = new StringBuilder();
-            String linha;
-
-            while ((linha = br.readLine()) != null) {
-                respostas.append(linha);
-                respostas.append("\n");
-            }
-
-            br.close();
-
-            return respostas.toString();
+            return conteudo.toString();
         } catch (IOException e) {
             e.printStackTrace();
             return null;

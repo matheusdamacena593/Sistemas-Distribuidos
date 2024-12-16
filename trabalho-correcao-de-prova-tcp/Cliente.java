@@ -6,7 +6,7 @@ public class Cliente {
     public static void main(String[] args) {
         String servidorIP = "localhost";
         int servidorPorta = 8888;
-        String arquivoRespostas = "./respostas.txt";
+        String arquivoRespostas = "./prova.txt";
 
         try {
             Socket socketCliente = new Socket(servidorIP, servidorPorta);

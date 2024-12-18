@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.Random;
 
 public class Cliente2 {
     public static void main(String[] args) {
@@ -32,31 +31,32 @@ public class Cliente2 {
 
                 arquivoRespostas = escolherProva(opcao);
 
-                    saida.println(opcao);
-                    if (opcao == 0) {
-                        System.out.println("\nConexão encerrada. Servidor desconectado.");
-                        socketCliente.close();
-                        break;
-                    }
+                saida.println(opcao);
+                if (opcao == 0) {
+                    System.out.println("\nConexão encerrada. Servidor desconectado.");
+                    socketCliente.close();
+                    break;
+                }
 
-                    File file = new File(arquivoRespostas);
+                File file = new File(arquivoRespostas);
 
-                    BufferedReader leitorArquivo = new BufferedReader(new FileReader(file));
+                BufferedReader leitorArquivo = new BufferedReader(new FileReader(file));
 
-                    saida.println("INICIO DA PROVA");
+                saida.println("INICIO DA PROVA");
 
-                    String linha;
-                    while ((linha = leitorArquivo.readLine()) != null) {
-                        saida.println(linha);
-                    }
+                String linha;
 
-                    saida.println("FIM DA PROVA");
+                while ((linha = leitorArquivo.readLine()) != null) {
+                    saida.println(linha);
+                }
 
-                    BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
-                    String resultado = entrada.readLine();
+                saida.println("FIM DA PROVA");
 
-                    System.out.println("\nResultado da Prova: \n\n" + resultado);
-                    System.out.println("--------------------------\n\n");         
+                BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
+                String resultado = entrada.readLine();
+
+                System.out.println("\nResultado da Prova: \n\n" + resultado);
+                System.out.println("--------------------------\n\n");
 
             }while (opcao != 0);
         } catch (IOException e) {
@@ -87,7 +87,6 @@ public class Cliente2 {
             default:
                 arquivoRespostas = "";
         }
-
         return arquivoRespostas;
     }
 }

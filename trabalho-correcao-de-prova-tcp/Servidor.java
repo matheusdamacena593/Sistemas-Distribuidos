@@ -73,8 +73,6 @@ public class Servidor extends Thread {
                     }
                     linhasProva.add(linha);
                 }
-    
-
 
                 if (linhasProva.isEmpty()) {
                     saida.println("Erro: Não foi possível ler o arquivo de respostas.");

@@ -1,6 +1,5 @@
 import java.io.*;
 import java.net.*;
-import java.util.Random;
 
 public class Cliente {
     public static void main(String[] args) {
@@ -87,7 +86,6 @@ public class Cliente {
                 arquivoRespostas = "";
                 break;
         }
-
         return arquivoRespostas;
     }
 }

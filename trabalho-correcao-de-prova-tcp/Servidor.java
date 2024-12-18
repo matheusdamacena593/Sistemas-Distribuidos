@@ -8,8 +8,6 @@ public class Servidor extends Thread {
     private String arquivoGabarito = "./gabarito.txt";
     private Socket socket;
     private ServerSocket servidorSocket;
-    private static boolean executando = true;
-    private String mensagem;
 
     public Servidor() {
         //Feito para instanciar a classe na main sem paramentros
@@ -37,7 +35,7 @@ public class Servidor extends Thread {
             
             servidor.criarServidorSocket(8888);
 
-            while (executando) {
+            while (true) {
                 Socket clienteConectado = servidor.esperarConexao();
                 Thread thread = new Servidor(clienteConectado);
                 thread.start();
@@ -52,64 +50,76 @@ public class Servidor extends Thread {
             BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter saida = new PrintWriter(socket.getOutputStream(), true);
 
+            String mensagem;
+
             while ((mensagem = entrada.readLine()) != null) {
 
-                if (mensagem.equalsIgnoreCase("parar")) {
-                    System.out.println("Conexão encerrada. Cliente desconectado.");
+                if (mensagem.equalsIgnoreCase("0")) {
+                    System.out.println("Conexão encerrada. Cliente " + socket.getInetAddress().getHostName() + "na porta " + socket.getPort() + " desconectado.");
                     socket.close();
-                    executando = false;
-                    break;
+                    return;
+                }
+
+                List<String> linhasGabarito = lerArquivoComoLista(arquivoGabarito);
+
+                List<String> linhasProva = new ArrayList<>();
+                String linha;
+                while ((linha = entrada.readLine()) != null) {
+                    if (linha.equals("INICIO DA PROVA")) {
+                        continue;
+                    }
+                    if (linha.equals("FIM DA PROVA")) {
+                        break;
+                    }
+                    linhasProva.add(linha);
+                }
+    
+
+
+                if (linhasProva.isEmpty()) {
+                    saida.println("Erro: Não foi possível ler o arquivo de respostas.");
+                    socket.close();
+                    return;
+                }
+
+                if (linhasGabarito.isEmpty()) {
+                    saida.println("Erro: Não foi possível ler o arquivo de gabarito.");
+                    socket.close();
+                    return;
+                }
+
+                if (linhasProva.size() != linhasGabarito.size()) {
+                    saida.println("Erro: O número de perguntas/respostas no arquivo não coincide com o gabarito.");
                 } else {
-                    String arquivoProva = entrada.readLine();
+                    int totalPerguntas = linhasProva.size();
+                    int acertos = 0;
+                    int erros = 0;
 
-                    List<String> linhasGabarito = lerArquivoComoLista(arquivoGabarito);
-                    List<String> linhasProva = lerArquivoComoLista(arquivoProva);
+                    for (int i = 0; i < totalPerguntas; i++) {
+                        String linhaProva = linhasProva.get(i);
+                        String linhaGabarito = linhasGabarito.get(i);
 
-                    if (linhasProva == null || linhasProva.isEmpty()) {
-                        saida.println("Erro: Não foi possível ler o arquivo de respostas.");
-                        socket.close();
-                        return;
-                    }
+                        int indexComeco = (linhaProva.charAt(1) == '-') ? 2 : 3;
 
-                    if (linhasGabarito == null || linhasGabarito.isEmpty()) {
-                        saida.println("Erro: Não foi possível ler o arquivo de gabarito.");
-                        socket.close();
-                        return;
-                    }
+                        String respostaProva = linhaProva.substring(indexComeco);
+                        String respostaGabarito = linhaGabarito.substring(indexComeco);
 
-                    if (linhasProva.size() != linhasGabarito.size()) {
-                        saida.println("Erro: O número de perguntas/respostas no arquivo não coincide com o gabarito.");
-                    } else {
-                        int totalPerguntas = linhasProva.size();
-                        int acertos = 0;
-                        int erros = 0;
+                        System.out.println((i + 1) + "° Comparação: ");
+                        System.out.println("Resposta: " + respostaProva);
+                        System.out.println("Gabarito: " + respostaGabarito + "\n");
 
-                        for (int i = 0; i < totalPerguntas; i++) {
-                            String linhaProva = linhasProva.get(i);
-                            String linhaGabarito = linhasGabarito.get(i);
+                        for (int j = 0; j < respostaProva.length(); j++) {
+                            char letraResposta = respostaProva.charAt(j);
+                            char letraGabarito = respostaGabarito.charAt(j);
 
-                            int indexComeco = (linhaProva.charAt(1) == '-') ? 2 : 3;
-
-                            String respostaProva = linhaProva.substring(indexComeco);
-                            String respostaGabarito = linhaGabarito.substring(indexComeco);
-
-                            System.out.println((i + 1) + "° Comparação: ");
-                            System.out.println("Resposta: " + respostaProva);
-                            System.out.println("Gabarito: " + respostaGabarito + "\n");
-
-                            for (int j = 0; j < respostaProva.length(); j++) {
-                                char letraResposta = respostaProva.charAt(j);
-                                char letraGabarito = respostaGabarito.charAt(j);
-
-                                if (letraResposta == letraGabarito) {
-                                    acertos++;
-                                } else {
-                                    erros++;
-                                }
+                            if (letraResposta == letraGabarito) {
+                                acertos++;
+                            } else {
+                                erros++;
                             }
                         }
-                        saida.println("Acertos: " + acertos + " - " + "Erros: " + erros);
                     }
+                    saida.println("Acertos: " + acertos + " - " + "Erros: " + erros);
                 }
             }
         } catch (IOException e) {

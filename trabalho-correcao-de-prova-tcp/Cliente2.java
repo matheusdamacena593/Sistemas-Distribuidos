@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 import java.util.Random;
 
-public class Cliente {
+public class Cliente2 {
     public static void main(String[] args) {
         int servidorPorta = 8888;
         String servidorIP = "localhost";
@@ -32,31 +32,31 @@ public class Cliente {
 
                 arquivoRespostas = escolherProva(opcao);
 
-                saida.println(opcao);
-                if (opcao == 0) {
-                    System.out.println("\nConexão encerrada. Servidor desconectado.");
-                    socketCliente.close();
-                    break;
-                }
+                    saida.println(opcao);
+                    if (opcao == 0) {
+                        System.out.println("\nConexão encerrada. Servidor desconectado.");
+                        socketCliente.close();
+                        break;
+                    }
 
-                File file = new File(arquivoRespostas);
+                    File file = new File(arquivoRespostas);
 
-                BufferedReader leitorArquivo = new BufferedReader(new FileReader(file));
+                    BufferedReader leitorArquivo = new BufferedReader(new FileReader(file));
 
-                saida.println("INICIO DA PROVA");
+                    saida.println("INICIO DA PROVA");
 
-                String linha;
-                while ((linha = leitorArquivo.readLine()) != null) {
-                    saida.println(linha);
-                }
+                    String linha;
+                    while ((linha = leitorArquivo.readLine()) != null) {
+                        saida.println(linha);
+                    }
 
-                saida.println("FIM DA PROVA");
+                    saida.println("FIM DA PROVA");
 
-                BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
-                String resultado = entrada.readLine();
+                    BufferedReader entrada = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
+                    String resultado = entrada.readLine();
 
-                System.out.println("\nResultado da Prova: \n\n" + resultado);
-                System.out.println("--------------------------\n\n");
+                    System.out.println("\nResultado da Prova: \n\n" + resultado);
+                    System.out.println("--------------------------\n\n");         
 
             }while (opcao != 0);
         } catch (IOException e) {
@@ -66,7 +66,6 @@ public class Cliente {
 
     public static String escolherProva(int opcao){
         String arquivoRespostas;
-
         switch(opcao){
             case 1:
                 arquivoRespostas = "./prova-tipo-1.txt";
@@ -83,9 +82,10 @@ public class Cliente {
             case 5:
                 arquivoRespostas = "./prova-tipo-5.txt";
                 break;
+            case 0:
+                arquivoRespostas = "";
             default:
                 arquivoRespostas = "";
-                break;
         }
 
         return arquivoRespostas;
